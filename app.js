@@ -23,7 +23,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -44,7 +43,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render(err);
 });
 
 module.exports = app;
