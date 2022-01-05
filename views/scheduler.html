@@ -5,17 +5,21 @@
     <title>Scheduler</title>
 </head>
 <body>
-    <button class="changePageBtn" onclick="cal.prev();">Prev</button>
-    <button class="changePageBtn" onclick="cal.today();">Today</button>
-    <button class="changePageBtn" onclick="cal.next();">Next</button>
-    <button class="selectViewBtn" onclick="cal.changeView('day', true);">Day</button>
-    <button class="selectViewBtn" onclick="cal.changeView('week', true);">Week</button>
-    <button class="selectViewBtn" onclick="cal.changeView('month', true);">Month</button>
+    <!-- 화면 구성 -->
+    <span id="renderRange" class="render-range"></span>
+    <button class="changePageBtn" onclick="cal.prev();">이전</button>
+    <button class="changePageBtn" onclick="cal.today();">오늘</button>
+    <button class="changePageBtn" onclick="cal.next();">다음</button>
+    <button class="selectViewBtn" onclick="cal.changeView('day', true);">일별</button>
+    <button class="selectViewBtn" onclick="cal.changeView('week', true);">주별</button>
+    <button class="selectViewBtn" onclick="cal.changeView('month', true);">월별</button>
+    <span style="position: relative; left: 690px; top: 3px;"><%= user.NAME %>님 안녕하세요</span>
+    <button style="position: relative; left: 700px;"><a href="/scheduler/insertpage">예약하기</a></button>
     <div>
         <div id="calendar" style="height: 800px;"></div>
     </div>
     
-    
+    <!-- 스타일 및 js -->
     <link rel='stylesheet' type='text/css' media='screen' href='/css/scheduler.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css" />
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
@@ -24,126 +28,93 @@
     <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
     <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.js"></script>
     <script src="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.js"></script>
+    
+    <!-- 제이쿼리 -->
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // const calendar = tui.DatePicker.createCalendar('.tui-calendar-container', {
-            //     language: 'ko',
-            //     showToday: true,
-            //     showJumpButtons: false,
-            //     date: new Date(),
-            //     type: 'date'
-            // });
-
-            var cal = new tui.Calendar(document.getElementById('calendar'), {
-                defaultView: 'month',
-                taskView: true,    
-                usageStatistics: false,
-                useCreationPopup : true,
-                useDetailPopup: true,
-                week: {
-                    daynames: ['일', '월', '화', '수', '목', '금', '토'],
-                    narrowWeekend: false,
-                    startDayOfWeek: 1
-                },
-                month: {
-                    daynames: ['일', '월', '화', '수', '목', '금', '토'],
-                    narrowWeekend: false,
-                    startDayOfWeek: 0
-                },
-                template:{
-                    milestone: function(model) {
-                        return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + model.bgColor + '">' + model.title + '</span>';
-                    },
-                },
-                timezone: {
-                zones: [
-                    {
-                        timezoneName: 'Asia/Seoul',
-                        displayLabel: 'GMT+09:00',
-                        tooltip: 'Seoul'
-                    }
-                ],
-            }
-            });
-
-            cal.createSchedules([
-            {
-                id: '1',
-                calendarId: '1',
-                title: 'my schedule',
-                category: 'time',
-                dueDateClass: '',
-                start: '2022-01-04T22:30:00+09:00',
-                end: '2022-01-04T02:30:00+09:00'
+        var cal = new tui.Calendar(document.getElementById('calendar'), {
+            defaultView: 'month',
+            taskView: true,    
+            usageStatistics: false,
+            useCreationPopup : false,
+            useDetailPopup: true,
+            week: {
+                daynames: ['일', '월', '화', '수', '목', '금', '토'],
+                narrowWeekend: false,
+                startDayOfWeek: 1
             },
-            {
-                id: '2',
-                calendarId: '1',
-                title: 'my schedule',
-                category: 'time',
-                dueDateClass: '',
-                start: '2022-01-05T22:30:00+09:00',
-                end: '2022-01-05T02:30:00+09:00'
+            month: {
+                daynames: ['일', '월', '화', '수', '목', '금', '토'],
+                narrowWeekend: false,
+                startDayOfWeek: 0
             },
-            ]);
-            
-            // event handlers
-            cal.on({
-                'clickMore': function(e) {
-                    console.log('clickMore', e);
+            template:{
+                milestone: function(model) {
+                    return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + model.bgColor + '">' + model.title + '</span>';
                 },
-                'clickSchedule': function(e) {
-                    console.log('clickSchedule', e);
-                },
-                'clickDayname': function(date) {
-                    console.log('clickDayname', date);
-                },
-                'beforeCreateSchedule': function(e) {
-                    console.log("hi");
-                    console.log(e);
-                    
-                },
-                'beforeUpdateSchedule': function(e) {
-                    var schedule = e.schedule;
-                    var changes = e.changes;
-
-                    console.log('beforeUpdateSchedule', e);
-
-                    if (changes && !changes.isAllDay && schedule.category === 'allday') {
-                        changes.category = 'time';
-                    }
-
-                    cal.updateSchedule(schedule.id, schedule.calendarId, changes);
-                    refreshScheduleVisibility();
-                },
-                'beforeDeleteSchedule': function(e) {
-                    console.log('beforeDeleteSchedule', e);
-                    cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
-                },
-                'afterRenderSchedule': function(e) {
-                    var schedule = e.schedule;
-                    // var element = cal.getElement(schedule.id, schedule.calendarId);
-                    // console.log('afterRenderSchedule', element);
-                },
-                'clickTimezonesCollapseBtn': function(timezonesCollapsed) {
-                    console.log('timezonesCollapsed', timezonesCollapsed);
-
-                    if (timezonesCollapsed) {
-                        cal.setTheme({
-                            'week.daygridLeft.width': '77px',
-                            'week.timegridLeft.width': '77px'
-                        });
-                    } else {
-                        cal.setTheme({
-                            'week.daygridLeft.width': '60px',
-                            'week.timegridLeft.width': '60px'
-                        });
-                    }
-
-                    return true;
+            },
+            timezone: {
+            zones: [
+                {
+                    timezoneName: 'Asia/Seoul',
+                    displayLabel: 'GMT+09:00',
+                    tooltip: 'Seoul'
                 }
-            });
+            ],
+        }
         });
+
+        cal.createSchedules([
+            <% for(i=0; i < data.length; i++){ %>
+                {
+                    id: '<%= data[i].ID %>',
+                    calendarId: '<%= data[i].CALENDARID %>',
+                    title: '<%= data[i].TITLE %>',
+                    category: '<%= data[i].CATEGORY %>',
+                    start: '<%= data[i].START %>',
+                    end: '<%= data[i].END %>'
+                },
+            <% } %>
+        ]);
+        
+        // event handlers
+        cal.on({
+            'clickMore': function(e) {
+                console.log('clickMore', e);
+            },
+            'clickSchedule': function(e) {
+                console.log('clickSchedule', e);
+            },
+            'clickDayname': function(date) {
+                console.log('clickDayname', date);
+            },
+            'beforeCreateSchedule': function(e) {
+                console.log("hi");
+                console.log(e);
+            },
+            'beforeUpdateSchedule': function(e) {
+                var schedule = e.schedule;
+                var changes = e.changes;
+                // 업데이트 페이지로 이동
+                console.log('beforeUpdateSchedule', e);
+                
+                if (changes && !changes.isAllDay && schedule.category === 'allday') {
+                    changes.category = 'time';
+                }
+
+                cal.updateSchedule(schedule.id, schedule.calendarId, changes);
+                //refreshScheduleVisibility();
+            },
+            'beforeDeleteSchedule': function(e) {
+                console.log('beforeDeleteSchedule', e);
+                cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
+            },
+            'afterRenderSchedule': function(e) {
+                var schedule = e.schedule;
+                // var element = cal.getElement(schedule.id, schedule.calendarId);
+                // console.log('afterRenderSchedule', element);
+            },
+        });
+
     </script>
 </body>

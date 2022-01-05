@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약하기</title>
+</head>
+<link rel='stylesheet' type='text/css' media='screen' href='/css/schedulerInsert.css'>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    $(function(){
+        var roomName = "301호";
+        /* 자원선택 */
+        $("select[name=location").click(function(){
+        });
+        
+        
+        /* 게시판 인서트 */
+        $("#insert").click(function(){
+            console.log($("select[name=location").val());
+            //$("form").submit();
+        });
+
+
+
+
+
+
+
+
+    });//루트
+</script>
+<div class="wrapper">
+    <div class="content">
+        <h1>예약하기</h1>
+        <form method="post" action="/scheduler">
+            <span style="font-size: 20px;">자원선택</span>
+            <select name="location">
+                <option value="301호">301호 중회의실</option>
+                <option value="302호">302호 소회의실</option>
+                <option value="303호">303호 대회의실</option>
+                <option value="402호">402호 회의실</option>
+            </select><br><br>
+            <span style="font-size: 20px;">예약자&nbsp&nbsp</span>
+            <input type="text" style="width: 200px;" name="name" value="<%= user.NAME %>" readonly><br><br>
+            <span style="font-size: 20px;">예약명&nbsp&nbsp</span>
+            <input type="text" style="width: 200px;" name="title"><br><br>
+            <span style="font-size: 20px; margin-right: 10px;">예약일</span>
+            <input type="date" name="startDate" style="height: 37px;">
+            <select name="startTime">      
+                <option value="08:00">08:00</option>
+                <option value="08:10">08:10</option>
+                <option value="08:20">08:20</option>
+                <option value="08:30">08:30</option>
+                <option value="08:40">08:40</option>
+                <option value="08:50">08:50</option>
+                <option value="09:00">09:00</option>
+                <option value="09:10">09:10</option>
+                <option value="09:20">09:20</option>
+                <option value="09:30">09:30</option>
+                <option value="09:40">09:40</option>
+                <option value="09:50">09:50</option>
+                <option value="10:00">10:00</option>
+                <option value="10:10">10:10</option>
+                <option value="10:20">10:20</option>
+                <option value="10:30">10:30</option>
+                <option value="10:40">10:40</option>
+                <option value="10:50">10:50</option>
+                <option value="11:00">11:00</option>
+                <option value="11:10">11:10</option>
+                <option value="11:20">11:20</option>
+                <option value="11:30">11:30</option>
+                <option value="11:40">11:40</option>
+                <option value="11:50">11:50</option>
+                <option value="12:00">12:00</option>
+                <option value="12:10">12:10</option>
+                <option value="12:20">12:20</option>
+                <option value="12:30">12:30</option>
+                <option value="12:40">12:40</option>
+                <option value="12:50">12:50</option>
+                <option value="13:00">13:00</option>
+                <option value="13:10">13:10</option>
+                <option value="13:20">13:20</option>
+                <option value="13:30">13:30</option>
+                <option value="13:40">13:40</option>
+                <option value="13:50">13:50</option>
+                <option value="14:00">14:00</option>
+                <option value="14:10">14:10</option>
+                <option value="14:20">14:20</option>
+                <option value="14:30">14:30</option>
+                <option value="14:40">14:40</option>
+                <option value="14:50">14:50</option>
+                <option value="15:00">15:00</option>
+                <option value="15:10">15:10</option>
+                <option value="15:20">15:20</option>
+                <option value="15:30">15:30</option>
+                <option value="15:40">15:40</option>
+                <option value="15:50">15:50</option>
+                <option value="16:00">16:00</option>
+                <option value="16:10">16:10</option>
+                <option value="16:20">16:20</option>
+                <option value="16:30">16:30</option>
+                <option value="16:40">16:40</option>
+                <option value="16:50">16:50</option>
+                <option value="17:00">17:00</option>
+                <option value="17:10">17:10</option>
+                <option value="17:20">17:20</option>
+                <option value="17:30">17:30</option>
+                <option value="17:40">17:40</option>
+                <option value="17:50">17:50</option>
+                <option value="18:00">18:00</option>
+                <option value="18:10">18:10</option>
+                <option value="18:20">18:20</option>
+                <option value="18:30">18:30</option>
+                <option value="18:40">18:40</option>
+                <option value="18:50">18:50</option>
+                <option value="19:00">19:00</option> 
+            </select>
+            <span style="font-size: 15px; margin-right: 10px;">부터</span>
+            <input type="date" name="endDate" style="height: 37px;">
+            <select name="endTime">     
+                <option value="08:00">08:00</option>
+                <option value="08:10">08:10</option>
+                <option value="08:20">08:20</option>
+                <option value="08:30">08:30</option>
+                <option value="08:40">08:40</option>
+                <option value="08:50">08:50</option>
+                <option value="09:00">09:00</option>
+                <option value="09:10">09:10</option>
+                <option value="09:20">09:20</option>
+                <option value="09:30">09:30</option>
+                <option value="09:40">09:40</option>
+                <option value="09:50">09:50</option>
+                <option value="10:00">10:00</option>
+                <option value="10:10">10:10</option>
+                <option value="10:20">10:20</option>
+                <option value="10:30">10:30</option>
+                <option value="10:40">10:40</option>
+                <option value="10:50">10:50</option>
+                <option value="11:00">11:00</option>
+                <option value="11:10">11:10</option>
+                <option value="11:20">11:20</option>
+                <option value="11:30">11:30</option>
+                <option value="11:40">11:40</option>
+                <option value="11:50">11:50</option>
+                <option value="12:00">12:00</option>
+                <option value="12:10">12:10</option>
+                <option value="12:20">12:20</option>
+                <option value="12:30">12:30</option>
+                <option value="12:40">12:40</option>
+                <option value="12:50">12:50</option>
+                <option value="13:00">13:00</option>
+                <option value="13:10">13:10</option>
+                <option value="13:20">13:20</option>
+                <option value="13:30">13:30</option>
+                <option value="13:40">13:40</option>
+                <option value="13:50">13:50</option>
+                <option value="14:00">14:00</option>
+                <option value="14:10">14:10</option>
+                <option value="14:20">14:20</option>
+                <option value="14:30">14:30</option>
+                <option value="14:40">14:40</option>
+                <option value="14:50">14:50</option>
+                <option value="15:00">15:00</option>
+                <option value="15:10">15:10</option>
+                <option value="15:20">15:20</option>
+                <option value="15:30">15:30</option>
+                <option value="15:40">15:40</option>
+                <option value="15:50">15:50</option>
+                <option value="16:00">16:00</option>
+                <option value="16:10">16:10</option>
+                <option value="16:20">16:20</option>
+                <option value="16:30">16:30</option>
+                <option value="16:40">16:40</option>
+                <option value="16:50">16:50</option>
+                <option value="17:00">17:00</option>
+                <option value="17:10">17:10</option>
+                <option value="17:20">17:20</option>
+                <option value="17:30">17:30</option>
+                <option value="17:40">17:40</option>
+                <option value="17:50">17:50</option>
+                <option value="18:00">18:00</option>
+                <option value="18:10">18:10</option>
+                <option value="18:20">18:20</option>
+                <option value="18:30">18:30</option>
+                <option value="18:40">18:40</option>
+                <option value="18:50">18:50</option>
+                <option value="19:00">19:00</option>  
+            </select><br><br>
+            <span style="font-size: 20px;">종일&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <input type="radio" name="allday" value="true">예
+            <input type="radio" name="allday" value="false">아니오
+            <div></div>
+            <br><br><button type="button" id="insert">예약하기</button>
+        </form>
+    </div>
+</div>
+
+        <!-- id: '1',
+        calendarId: '1',
+        title: 'my schedule',
+        category: 'time',
+        dueDateClass: '',
+        start: '2022-01-04T10:30:00+09:00',
+        end: '2022-01-04T02:30:00+09:00' -->

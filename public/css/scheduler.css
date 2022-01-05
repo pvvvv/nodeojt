@@ -10,6 +10,7 @@
     font-size: 15px;
     padding: 5px;
     border: none;
+    cursor: pointer;
 }
 .selectViewBtn{
     background-color: rgb(255, 188, 255);

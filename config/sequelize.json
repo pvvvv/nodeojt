@@ -1,24 +1,24 @@
 {
   "development": {
-    "username": "root",
+    "username": "wonwoo2",
     "password": null,
-    "database": "database_development",
-    "host": "127.0.0.1",
+    "database": "nodetwo",
+    "host": "database-1.cz7mwf5qtbgy.ap-northeast-2.rds.amazonaws.com",
     "dialect": "mysql"
   },
   
   "test": {
-    "username": "root",
+    "username": "wonwoo2",
     "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "database": "nodetwo",
+    "host": "database-1.cz7mwf5qtbgy.ap-northeast-2.rds.amazonaws.com",
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
+    "username": "wonwoo2",
     "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "database": "nodetwo",
+    "host": "database-1.cz7mwf5qtbgy.ap-northeast-2.rds.amazonaws.com",
     "dialect": "mysql"
   }
 }

@@ -7,7 +7,6 @@ var scheduleController = require('../routes/scheduler/scheduler-controller');
 router.get('/', userController.loginPage);
 /* GET Join page. */
 router.get('/join', userController.joinPage);
-/* GET schedule page. */
-router.get('/scheduler', scheduleController.schedulerPage);
+
 
 module.exports = router;

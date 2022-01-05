@@ -1,0 +1,18 @@
+.weapper{
+    width: 1800px;
+    margin: 0 auto;
+}
+.content{
+    padding-top: 100px;
+    padding-left: 300px;
+}
+select{
+    width: 150px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#dateTimeLocal{
+    width: 200px;
+}
