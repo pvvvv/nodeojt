@@ -9,7 +9,8 @@ function ajaxRequset(type,url,data,callback){
             callback(success);
         },
         error:function(error){
-            alert(error);
+            var data = error.responseJSON;
+            alert(data.errorMessage);
         }
     });
 }

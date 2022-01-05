@@ -41,7 +41,7 @@ passportConfig();
 app.use(function(req, res, next) {
   var nowUrl = req.url;
   var blackList = nowUrl.startsWith('/scheduler');
-  
+  var whiteList = nowUrl.startsWith('/join') || nowUrl == '/';
   if(req.session.user == undefined){
     if(blackList){
       return res.redirect('/');
@@ -49,6 +49,10 @@ app.use(function(req, res, next) {
       next();
     }
   }else{
+    if(whiteList || !nowUrl.startsWith('/scheduler')){
+      return res.redirect('/scheduler');
+    }
+    //사용하는 url 추가해서 그거 이외엔 다 리다이렉트
     next();
   }
 

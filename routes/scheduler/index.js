@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var scheduleController = require('./scheduler-controller');
 
+/* iframe url */
+router.get('/iframe', scheduleController.iframeSchedulerPage);
 /* GET schedule page. */
 router.get('/', scheduleController.schedulerPage);
 /* POST schedule page */

@@ -1,0 +1,17 @@
+#calendar{
+    width: 800px;
+    margin-top: 10px;
+}
+.changePageBtn, .selectViewBtn{
+    width: 50px;
+    height: 30px;
+    color: white;
+    background-color: rgb(131, 135, 252);
+    font-size: 15px;
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+}
+.selectViewBtn{
+    background-color: rgb(255, 188, 255);
+}

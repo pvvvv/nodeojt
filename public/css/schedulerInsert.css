@@ -12,7 +12,16 @@ select{
     font-size: 14px;
     font-weight: bold;
 }
-
 #dateTimeLocal{
     width: 200px;
+}
+.dateInput{
+    font-size: 14px;
+    font-weight: bold;
+}
+#ibox{
+    position: relative;
+    right: 80px;
+    width: 820px;
+    height: 650px;
 }

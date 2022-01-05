@@ -30,6 +30,8 @@ exports.findoverlap = async function(req, res, next){
             where: {id: id}
         });
 
+       
+
         if(findData === null){
             success.text = "사용이 가능한 사번입니다.";
             success.overlapCheck = 1;
@@ -38,7 +40,8 @@ exports.findoverlap = async function(req, res, next){
             success.errorMessage = "사용중인 아이디입니다.";
             success.overlapCheck = 0;
             statusNum = 409
-        }        
+        };
+        console.log(success);
         res.status(statusNum).json(success);
     } catch (error) {
         next(error);
@@ -54,39 +57,39 @@ exports.doJoin = async function(req, res, next){
     var regId = /^[0-9]{4}$/;
     var regPw = /^[A-Za-z0-9+]{4,8}$/;
 
-    // try{
-    //     var findData = await db.user.findOne({
-    //         where: {ID: personNum}
-    //     });
+    try{
+        var findData = await db.user.findOne({
+            where: {id: id}
+        });
         
-    //     if(findData !== null){
-    //         statusNum = 409;
-    //         success.errorMessage = "이미 가입된 계정입니다";
-    //     }else if(!regId.test(personNum) || !regPw.test(password)){
-    //         success.errorMessage = "잘못된 접근입니다.";
-    //         statusNum = 400;
-    //     }else{
-    //         var saltRounds = 10;
-    //         var salt = bcrypt.genSaltSync(saltRounds);
-    //         var encryptedPassword = bcrypt.hashSync(password, salt);
+        if(findData !== null){
+            statusNum = 409;
+            success.errorMessage = "이미 가입된 계정입니다";
+        }else if(!regId.test(id) || !regPw.test(password)){
+            success.errorMessage = "잘못된 접근입니다.";
+            statusNum = 400;
+        }else{
+            var saltRounds = 10;
+            var salt = bcrypt.genSaltSync(saltRounds);
+            var encryptedPassword = bcrypt.hashSync(password, salt);
 
-    //         try {
-    //             db.user.create({
-    //                 ID : personNum,
-    //                 NAME : name,
-    //                 PASSWORD: encryptedPassword
-    //             });
-    //             success.text = "가입되셨습니다!"
-    //             statusNum = 200;
-    //         } catch (error) {
-    //             statusNum = 400;
-    //             success.errorMessage = "가입에 실패했습니다. 고객센터로 전화주세요";
-    //         }
-    //     };
-    //     res.status(statusNum).json(success);
-    // } catch (error) {
-    //     next(error);
-    // };
+            try {
+                db.user.create({
+                    id : id,
+                    name : name,
+                    password: encryptedPassword
+                });
+                success.text = "가입되셨습니다!"
+                statusNum = 200;
+            } catch (error) {
+                statusNum = 400;
+                success.errorMessage = "가입에 실패했습니다. 고객센터로 전화주세요";
+            }
+        };
+        res.status(statusNum).json(success);
+    } catch (error) {
+        next(error);
+    };
 }
 
 exports.doLogin = async function(req, res, next){

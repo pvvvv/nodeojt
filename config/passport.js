@@ -21,21 +21,21 @@ module.exports = function(res ,req){
     });
 
     passport.use(new LoaclStrategy({
-        usernameField : 'personNum',
+        usernameField : 'id',
         passwordField : 'password',
         session : true,
         passReqToCallback : true,
-    }, async function(req, personNum, password, done){
+    }, async function(req, id, password, done){
         try {
             var findData = await db.user.findOne({
                 where : {
-                    ID : personNum
+                    ID : id
                 }
             });
             
             if(findData === null){
                 return done(null, false, {message : '존재하지 않는 아이디입니다.'});
-            }else if(!bcrypt.compareSync(password, findData.PASSWORD)){
+            }else if(!bcrypt.compareSync(password, findData.password)){
                 return done(null, false, {message : '비밀번호가 틀렸습니다'});
             }else{
                 req.session.user = findData;

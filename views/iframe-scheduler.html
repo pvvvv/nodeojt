@@ -6,21 +6,15 @@
 </head>
 <body>
     <!-- 화면 구성 -->
-    <span id="renderRange" class="render-range"></span>
     <button class="changePageBtn" onclick="cal.prev();">이전</button>
     <button class="changePageBtn" onclick="cal.today();">오늘</button>
     <button class="changePageBtn" onclick="cal.next();">다음</button>
-    <button class="selectViewBtn" onclick="cal.changeView('day', true);">일별</button>
-    <button class="selectViewBtn" onclick="cal.changeView('week', true);">주별</button>
-    <button class="selectViewBtn" onclick="cal.changeView('month', true);">월별</button>
-    <span style="position: relative; left: 690px; top: 3px;"><%= user.id %>님 안녕하세요</span>
-    <button style="position: relative; left: 700px;"><a href="/scheduler/insertpage">예약하기</a></button>
     <div>
-        <div id="calendar" style="height: 800px;"></div>
+        <div id="calendar" style="height: 200px;"></div>
     </div>
     
     <!-- 스타일 및 js -->
-    <link rel='stylesheet' type='text/css' media='screen' href='/css/scheduler.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/iframe-scheduler.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css" />
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />

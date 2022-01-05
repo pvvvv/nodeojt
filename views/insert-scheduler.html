@@ -8,24 +8,46 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
     $(function(){
-        var roomName = "301호";
+        var roomName = "301호"; // 기본 세팅값
+        
+        /* 날짜 기본세팅 */
+        var date = new Date();
+        var yyyy = date.getFullYear();
+        var mm = date.getMonth()+1 > 9 ? date.getMonth()+1 : '' + date.getMonth()+1;
+        var dd = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+        $("input[type=date]").val(yyyy+"-"+mm+"-"+dd);
+
         /* 자원선택 */
-        $("select[name=location").click(function(){
+        $("#location").click(function(){
+            roomName = $("#location option:selected").val();
         });
+
+        /* 예약 시작일 선택시 예약된곳 예약불가 */
+        
+
+        /* 날짜 가공 */
+        
+
+
         
         
+        
+        
+
+
+
+
+
+
         /* 게시판 인서트 */
         $("#insert").click(function(){
-            console.log($("select[name=location").val());
-            //$("form").submit();
+            var title = $("input[name=title]").val();
+            if(title === ""){
+                alert("예약명을 입력해주세요");
+            }else{
+                $("form").submit();
+            }
         });
-
-
-
-
-
-
-
 
     });//루트
 </script>
@@ -34,18 +56,18 @@
         <h1>예약하기</h1>
         <form method="post" action="/scheduler">
             <span style="font-size: 20px;">자원선택</span>
-            <select name="location">
+            <select name="location" id="location">
                 <option value="301호">301호 중회의실</option>
                 <option value="302호">302호 소회의실</option>
                 <option value="303호">303호 대회의실</option>
                 <option value="402호">402호 회의실</option>
             </select><br><br>
             <span style="font-size: 20px;">예약자&nbsp&nbsp</span>
-            <input type="text" style="width: 200px;" name="name" value="<%= user.NAME %>" readonly><br><br>
+            <input type="text" style="width: 200px;" name="name" value="<%= user.id %>" readonly><br><br>
             <span style="font-size: 20px;">예약명&nbsp&nbsp</span>
             <input type="text" style="width: 200px;" name="title"><br><br>
             <span style="font-size: 20px; margin-right: 10px;">예약일</span>
-            <input type="date" name="startDate" style="height: 37px;">
+            <input class="dateInput" type="date" name="startDate" style="height: 37px;">
             <select name="startTime">      
                 <option value="08:00">08:00</option>
                 <option value="08:10">08:10</option>
@@ -116,7 +138,7 @@
                 <option value="19:00">19:00</option> 
             </select>
             <span style="font-size: 15px; margin-right: 10px;">부터</span>
-            <input type="date" name="endDate" style="height: 37px;">
+            <input type="date" class="dateInput" name="endDate" style="height: 37px;">
             <select name="endTime">     
                 <option value="08:00">08:00</option>
                 <option value="08:10">08:10</option>
@@ -188,9 +210,9 @@
             </select><br><br>
             <span style="font-size: 20px;">종일&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <input type="radio" name="allday" value="true">예
-            <input type="radio" name="allday" value="false">아니오
-            <div></div>
+            <input type="radio" name="allday" value="false" checked>아니오
             <br><br><button type="button" id="insert">예약하기</button>
+            <!-- <iframe id="ibox" src="/scheduler/iframe"></iframe> -->
         </form>
     </div>
 </div>
