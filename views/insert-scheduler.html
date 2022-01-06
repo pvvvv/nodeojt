@@ -11,41 +11,68 @@
 <script>
     /* 시간 제한하기 콜백 */
     function ajaxGetSoldout(success){
-        //날짜에 알맞은 스케줄 보여주기
-        //document.getElementById('ibox').innerHTML = `<iframe id="inIbox" src="/scheduler/iframe"></iframe>`
+        var choiceDate = new Date($("input[name=startDate]").val()).toISOString().substring(0, 10);
         
-        var startDate = $("input[name=startDate]").val();
-        var temp = success.startDate;
-        var start = success.startDate;
-        var end = success.endDate;
-        // var start = new Date(success.startDate).toTimeString().substring(0, 5);
-        // var end = new Date(success.endDate).toTimeString().substring(0, 5);
+        /* !사용할거!
+        날짜에 알맞은 스케줄 보여주기
+        document.getElementById('ibox').innerHTML = `<iframe id="inIbox" src="/scheduler/iframe"></iframe>`
+        */
+
+        //시간 초기화
+        $('#startTime option').prop('disabled', false).eq(0).prop('selected', true);
+        $('#endTime option').prop('disabled', false).eq(0).prop('selected', true);
+
+        /* 날짜비교 이렇게하기 메모
+        var d = new Date('2022-01-07 08:00:00').getTime(); 
+        var d2 = new Date('2022-01-08 08:00:01').getTime();
+        */
         
-        // start ~ end 사이에서 하나하나 비교해서 시작보다 크거나 끝보다 작을때까지 돌려
-        //($("select[name=startTime]")
-        $("#startTime option").each(function(){
-            console.log("돈다");
-            var temp = $(this).val();
-            console.log(startDate, temp);
-            console.log(start);
-            console.log(end);
+        $(success).each(function() {
+            var data = $(this)[0]; // success[0] = data
+            var endDay = new Date(data['endDate']).getTime(); // 그 일정에 종료날짜.getTime()
+            var start = new Date(data['startDate']).toTimeString().substring(0, 5); // 시작시간 포멧 08:00
+            var end = new Date(data['endDate']).toTimeString().substring(0, 5);     // 종료시간 포멧 09:00
+            var stIndex = $('#startTime option[value="' + start + '"]').index(); // 전체 옵션중에 시작시간이랑 같은 옵션의 인덱스
+            var edIndex = $('#endTime option[value="' + end + '"]').index();     // 전체 옵션중에 종료시간이랑 같은 옵션의 인덱스
 
+            /* 선택날짜와 종료날짜를 비교해서 있다면 시작시간 인덱스부터 싹 다 disabled 
+             * 없다면 데이터들이 선택날짜와 종료날짜가 같으니 있는것들만 disabled
+            console.log(choiceDate < endDay);
+            console.log(choiceDate, endDay);
+            
 
-            // if(start <= temp <= end){
-            //     console.log("왔다");
-            //     console.log(temp);
-            //     //$(this).prop('disabled',true);
-            // }else{
-            //     console.log("안왔다");
-            // }
+            if(choiceDate < endDay){ // 1번 어떻게 비교할지 고민하기
+                console.log("크다!");
+            }else{
+                console.log("없다");
+            }
+            */
+
+            for(var i=stIndex; i<=edIndex; i++) {
+                $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+            }
+            $('#startTime option').not(':disabled').first().prop('selected', true); // 옵션이 디스에이블이 아닌것중 첫번째를 선택한다.
+            $('#endTime option').not(':disabled').first().prop('selected', true);
+            
+            /* 2번
+             * 지금은 자원을 눌러놓고 날짜 선택을해야 데이터를 받아왔다면
+             * 같은걸 날짜 먼저 누르고 자원을 선택해도 돌아가는 ajax를 생성해야함
+            */
+
+            /* 3번 (가정)
+             * 만약 1월 8일부터 1월 10일까지 예약하고싶은데
+             * 1월 9일에 누가 먼저 예약을 했다면?
+             * 스타트 데이트는 언제든 선택이 가능하다 하지만,
+             * 엔드 데이트는 1월 9일까지만 가능하게 보여줘야한다.
+             * max값을 attr 해줄건데 어떻게 알고 해줄것인가 
+            */ 
         });
     };
 
 
 
     $(function(){
-        
-        
+
         /* 날짜 기본세팅 */
         var date = new Date();
         var yyyy = date.getFullYear();
@@ -63,30 +90,17 @@
             var startDate = $("input[name=startDate]").val();
             var roomName = $("#location option:selected").val();
             var data = {"startDate" : startDate,
-                "roomName" : roomName
+            "roomName" : roomName
             };
             var url = "/scheduler/findDate";
             var type = "post";
-
+        
+            $("input[name=endDate]").val(startDate); // 선택한 날짜 같은날짜로 이동하기
+            $("input[name=endDate]").attr('min', startDate); // 선택한 날짜 이전 날짜는 선택붙가 , 검증 한번 필요
             ajaxRequset(type,url,data,ajaxGetSoldout);
         });
         
-
-        /* 날짜 가공 */
-        
-
-
-        
-        
-        
-        
-
-
-
-
-
-
-        /* 게시판 인서트 */
+         /* 게시판 인서트 */
         $("#insert").click(function(){
             var title = $("input[name=title]").val();
             if(title == ""){
@@ -186,7 +200,7 @@
             </select>
             <span style="font-size: 15px; margin-right: 10px;">부터</span>
             <input type="date" class="dateInput" name="endDate" style="height: 37px;">
-            <select name="endTime">     
+            <select name="endTime" id="endTime">     
                 <option value="08:00">08:00</option>
                 <option value="08:10">08:10</option>
                 <option value="08:20">08:20</option>

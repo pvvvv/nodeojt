@@ -43,7 +43,7 @@ exports.findDate = async function(req, res, next){
     var statusNum;
 
     try {
-        var findData = await db.scheduler.findOne({
+        var findData = await db.scheduler.findAll({
             where : {
                 startDate : {
                     [OP.gte] : minTime,
@@ -52,13 +52,16 @@ exports.findDate = async function(req, res, next){
                 location : {
                     [OP.like] : '%' + roomName + '%'
                 }
-            }
+            },
+            order: [['startDate', 'ASC']]
         });
         if(findData == null){
             return statusNum = 200;
         }else{
             statusNum = 200;
         }
+        console.log(findData);
+
         res.status(statusNum).json(findData);
     } catch (error) {
         next(error);
