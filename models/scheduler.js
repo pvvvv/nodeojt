@@ -34,6 +34,20 @@ module.exports = (sequelize, DataTypes) => {
     endDate: {
       allowNull : false,
       type : DataTypes.DATE,
+    },
+    location: {
+      allowNull : false,
+      type : DataTypes.ENUM("301호","302호","303호","402호"),
+      validate: {
+        isIn: {
+          args: [["301호","302호","303호","402호"]],
+            msg: "비정상적인 location value 접근"
+        }
+      }
+    },
+    name: {
+      allowNull : false,
+      type : DataTypes.STRING(20),
     }
   }, {
     sequelize,

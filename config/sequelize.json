@@ -5,7 +5,7 @@
     "database": "nodetwo",
     "host": "database-1.cz7mwf5qtbgy.ap-northeast-2.rds.amazonaws.com",
     "dialect": "mysql"
-  },
+},
   
   "test": {
     "username": "wonwoo2",

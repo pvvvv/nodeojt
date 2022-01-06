@@ -20,8 +20,9 @@ select{
     font-weight: bold;
 }
 #ibox{
-    position: relative;
-    right: 80px;
+    width: 830px;
+}
+#inIbox{
     width: 820px;
     height: 650px;
 }

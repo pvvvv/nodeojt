@@ -30,8 +30,6 @@ exports.findoverlap = async function(req, res, next){
             where: {id: id}
         });
 
-       
-
         if(findData === null){
             success.text = "사용이 가능한 사번입니다.";
             success.overlapCheck = 1;
@@ -41,7 +39,6 @@ exports.findoverlap = async function(req, res, next){
             success.overlapCheck = 0;
             statusNum = 409
         };
-        console.log(success);
         res.status(statusNum).json(success);
     } catch (error) {
         next(error);

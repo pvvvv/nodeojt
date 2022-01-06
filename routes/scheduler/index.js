@@ -15,5 +15,9 @@ router.delete('/', scheduleController.scheduleDelete);
 
 /* GET schedule InsertPage */
 router.get('/insertpage', scheduleController.scheduleInsertPage);
+/* 예약시 시간이 겹치지않도록 데이터를 조회하는 Ajax */
+router.post('/findDate', scheduleController.findDate);
+
+
 
 module.exports = router;

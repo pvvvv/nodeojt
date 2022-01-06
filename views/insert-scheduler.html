@@ -5,10 +5,46 @@
     <title>예약하기</title>
 </head>
 <link rel='stylesheet' type='text/css' media='screen' href='/css/schedulerInsert.css'>
+<script src="/js/ajaxmodules.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+    /* 시간 제한하기 콜백 */
+    function ajaxGetSoldout(success){
+        //날짜에 알맞은 스케줄 보여주기
+        //document.getElementById('ibox').innerHTML = `<iframe id="inIbox" src="/scheduler/iframe"></iframe>`
+        
+        var startDate = $("input[name=startDate]").val();
+        var temp = success.startDate;
+        var start = success.startDate;
+        var end = success.endDate;
+        // var start = new Date(success.startDate).toTimeString().substring(0, 5);
+        // var end = new Date(success.endDate).toTimeString().substring(0, 5);
+        
+        // start ~ end 사이에서 하나하나 비교해서 시작보다 크거나 끝보다 작을때까지 돌려
+        //($("select[name=startTime]")
+        $("#startTime option").each(function(){
+            console.log("돈다");
+            var temp = $(this).val();
+            console.log(startDate, temp);
+            console.log(start);
+            console.log(end);
+
+
+            // if(start <= temp <= end){
+            //     console.log("왔다");
+            //     console.log(temp);
+            //     //$(this).prop('disabled',true);
+            // }else{
+            //     console.log("안왔다");
+            // }
+        });
+    };
+
+
+
     $(function(){
-        var roomName = "301호"; // 기본 세팅값
+        
         
         /* 날짜 기본세팅 */
         var date = new Date();
@@ -19,10 +55,21 @@
 
         /* 자원선택 */
         $("#location").click(function(){
-            roomName = $("#location option:selected").val();
+            
         });
 
         /* 예약 시작일 선택시 예약된곳 예약불가 */
+        $("input[name=startDate]").change(function(){
+            var startDate = $("input[name=startDate]").val();
+            var roomName = $("#location option:selected").val();
+            var data = {"startDate" : startDate,
+                "roomName" : roomName
+            };
+            var url = "/scheduler/findDate";
+            var type = "post";
+
+            ajaxRequset(type,url,data,ajaxGetSoldout);
+        });
         
 
         /* 날짜 가공 */
@@ -42,7 +89,7 @@
         /* 게시판 인서트 */
         $("#insert").click(function(){
             var title = $("input[name=title]").val();
-            if(title === ""){
+            if(title == ""){
                 alert("예약명을 입력해주세요");
             }else{
                 $("form").submit();
@@ -63,12 +110,12 @@
                 <option value="402호">402호 회의실</option>
             </select><br><br>
             <span style="font-size: 20px;">예약자&nbsp&nbsp</span>
-            <input type="text" style="width: 200px;" name="name" value="<%= user.id %>" readonly><br><br>
+            <input type="text" style="width: 200px;" name="name" value="<%= user.name %>" readonly><br><br>
             <span style="font-size: 20px;">예약명&nbsp&nbsp</span>
             <input type="text" style="width: 200px;" name="title"><br><br>
             <span style="font-size: 20px; margin-right: 10px;">예약일</span>
             <input class="dateInput" type="date" name="startDate" style="height: 37px;">
-            <select name="startTime">      
+            <select name="startTime" id="startTime">      
                 <option value="08:00">08:00</option>
                 <option value="08:10">08:10</option>
                 <option value="08:20">08:20</option>
@@ -208,11 +255,11 @@
                 <option value="18:50">18:50</option>
                 <option value="19:00">19:00</option>  
             </select><br><br>
+            <div id="ibox"></div>
             <span style="font-size: 20px;">종일&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <input type="radio" name="allday" value="true">예
             <input type="radio" name="allday" value="false" checked>아니오
-            <br><br><button type="button" id="insert">예약하기</button>
-            <!-- <iframe id="ibox" src="/scheduler/iframe"></iframe> -->
+            <br><br><button type="button" id="insert">예약하기</button><br><br><br><br>
         </form>
     </div>
 </div>
