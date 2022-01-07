@@ -40,32 +40,38 @@ exports.findDate = async function(req, res, next){
     var {startDate, roomName} = req.body;
     var minTime = startDate+"T00:00:00";
     var maxTime = startDate+"T23:59:59";
-    var statusNum;
+    var statusNum = 200;
 
     try {
         var findData = await db.scheduler.findAll({
             where : {
-                startDate : {
-                    [OP.gte] : minTime,
-                    [OP.lte] : maxTime
-                },
+                [OP.or]:[
+                    {
+                        startDate : {
+                            [OP.gte] : minTime,// >=
+                            [OP.lte] : maxTime // <= 
+                        }
+                    },
+                    {
+                        startDate :{
+                            [OP.lte] : minTime // <=
+                        },
+                        endDate : {
+                            [OP.gte] : maxTime // <=
+                        }
+                    }
+                ],
                 location : {
                     [OP.like] : '%' + roomName + '%'
                 }
             },
             order: [['startDate', 'ASC']]
         });
-        if(findData == null){
-            return statusNum = 200;
-        }else{
-            statusNum = 200;
-        }
-        console.log(findData);
-
-        res.status(statusNum).json(findData);
+        
+        return res.status(200).json(findData);
     } catch (error) {
         next(error);
-    }
+    };
 };
 
 exports.scheduleInsert = async function(req, res, next){
@@ -74,8 +80,6 @@ exports.scheduleInsert = async function(req, res, next){
     var category;
     var start = startDate+"T"+startTime;
     var end = endDate+"T"+endTime;
-
-    console.log(location);
     
     try {
         if(allday === "true"){
@@ -106,6 +110,27 @@ exports.scheduleInsert = async function(req, res, next){
 
 };
 
+exports.findClosestTime = async function(req, res, next){
+    var OP = sequelize.Op;
+    var {startDate, startTime, roomName} = req.body;
+    var start = startDate+"T"+startTime;
+
+    try {
+        var findData = await db.scheduler.findOne({
+            where : {
+                startDate : {
+                    [OP.gte] : start,
+                },
+                location : roomName
+            },
+            order : [['startDate', 'asc']],
+        });
+    } catch (error) {
+        next(error);
+    };
+
+    res.json(findData);
+}
 
 
 

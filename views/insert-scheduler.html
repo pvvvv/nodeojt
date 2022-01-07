@@ -9,9 +9,12 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+    // Ajax 호출시에 응답이 올때까지 화면 멈추기 추가
+
     /* 시간 제한하기 콜백 */
     function ajaxGetSoldout(success){
-        var choiceDate = new Date($("input[name=startDate]").val()).toISOString().substring(0, 10);
+        var choiceDate = moment($("input[name=startDate]").val())._i;
         
         /* !사용할거!
         날짜에 알맞은 스케줄 보여주기
@@ -21,55 +24,75 @@
         //시간 초기화
         $('#startTime option').prop('disabled', false).eq(0).prop('selected', true);
         $('#endTime option').prop('disabled', false).eq(0).prop('selected', true);
-
-        /* 날짜비교 이렇게하기 메모
-        var d = new Date('2022-01-07 08:00:00').getTime(); 
-        var d2 = new Date('2022-01-08 08:00:01').getTime();
-        */
         
         $(success).each(function() {
+            
             var data = $(this)[0]; // success[0] = data
-            var endDay = new Date(data['endDate']).getTime(); // 그 일정에 종료날짜.getTime()
+            var endDay = data['endDate'].substring(0, 10); // 그 일정에 종료날짜 포멧 YYYY-MM-DD
             var start = new Date(data['startDate']).toTimeString().substring(0, 5); // 시작시간 포멧 08:00
             var end = new Date(data['endDate']).toTimeString().substring(0, 5);     // 종료시간 포멧 09:00
             var stIndex = $('#startTime option[value="' + start + '"]').index(); // 전체 옵션중에 시작시간이랑 같은 옵션의 인덱스
             var edIndex = $('#endTime option[value="' + end + '"]').index();     // 전체 옵션중에 종료시간이랑 같은 옵션의 인덱스
-
-            /* 선택날짜와 종료날짜를 비교해서 있다면 시작시간 인덱스부터 싹 다 disabled 
-             * 없다면 데이터들이 선택날짜와 종료날짜가 같으니 있는것들만 disabled
-            console.log(choiceDate < endDay);
-            console.log(choiceDate, endDay);
             
-
-            if(choiceDate < endDay){ // 1번 어떻게 비교할지 고민하기
-                console.log("크다!");
+            if(moment(endDay).isAfter(choiceDate)){ // 1번 어떻게 비교할지 고민하기
+                for(var i=stIndex; i<=$('#startTime option').length; i++) {
+                    $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                    $('#endTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                };
             }else{
-                console.log("없다");
-            }
-            */
+                for(var i=stIndex; i<=edIndex; i++) {
+                    $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                    $('#endTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                };
+            };
 
-            for(var i=stIndex; i<=edIndex; i++) {
-                $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
-            }
             $('#startTime option').not(':disabled').first().prop('selected', true); // 옵션이 디스에이블이 아닌것중 첫번째를 선택한다.
             $('#endTime option').not(':disabled').first().prop('selected', true);
-            
-            /* 2번
-             * 지금은 자원을 눌러놓고 날짜 선택을해야 데이터를 받아왔다면
-             * 같은걸 날짜 먼저 누르고 자원을 선택해도 돌아가는 ajax를 생성해야함
-            */
-
-            /* 3번 (가정)
-             * 만약 1월 8일부터 1월 10일까지 예약하고싶은데
-             * 1월 9일에 누가 먼저 예약을 했다면?
-             * 스타트 데이트는 언제든 선택이 가능하다 하지만,
-             * 엔드 데이트는 1월 9일까지만 가능하게 보여줘야한다.
-             * max값을 attr 해줄건데 어떻게 알고 해줄것인가 
-            */ 
         });
+        $("#startTime").change(); // 바뀐 시간에서 최인접값 찾아주는 에이젝스 실행
+    };
+
+    /* 인접값 end 시간이후 모두 disabled 시키는 콜백 */
+    function ajaxGetClosestTime(success){
+        var startTime = $("#startTime").val(); // 내가 선택한 시작시간
+        var selectIndex = $('#startTime option[value="' + startTime + '"]').index(); // 인접 데이터 시작시간의 '인덱스'
+        var repetCount = $("#endTime option").length; // 종료시간의 개수
+        $("input[name=endDate]").removeAttr('max'); // 선택할 수 있는 최대 날짜를 초기화해준다.
+        $('#endTime option').removeAttr('disabled'); // 민 시간 맥스 시간 비교해서 위 아래로 디스에이블 위에서 아래로 훑으면서 로직 짜는게 편할듯
+        
+        if(success !== null){
+            var maxDate = success.startDate.substring(0, 10); // 인접값의 '날짜'
+            var maxTime = new Date(success.startDate).toTimeString().substring(0, 5); // 인접데이터의 시작'시간'
+            var endTime = new Date(success.endDate).toTimeString().substring(0, 5); // 인접데이터의 시작'시간'
+            var stIndex = $('#startTime option[value="' + maxTime + '"]').index(); // 인접 데이터 시작시간의 '인덱스'
+            var edIndex = $('#endTime option[value="' + endTime + '"]').index();   // 인접 데이터 종료시간의 '인덱스'
+
+            $("input[name=endDate]").attr('max', maxDate); // 최대 선택가능 날짜 세팅
+            
+            for(var i = 0; i <= repetCount ; i++) {
+                if(i < selectIndex || stIndex < i){
+                    $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
+                }
+                $('#endTime option').not(':disabled').first().prop('selected', true);
+            };
+        }else{
+            for(var i = 0; i <= repetCount ; i++) {
+                if(i < selectIndex){
+                    $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
+                };
+                $('#endTime option').not(':disabled').first().prop('selected', true);
+            };
+        };
     };
 
 
+    /* 3번 (가정)
+        * 만약 1월 8일부터 1월 10일까지 예약하고싶은데
+        * 1월 9일에 누가 먼저 예약을 했다면?
+        * 스타트 데이트는 언제든 선택이 가능하다 하지만,
+        * 엔드 데이트는 1월 9일까지만 가능하게 보여줘야한다.
+        * max값을 attr 해줄건데 어떻게 알고 해줄것인가 
+    */ 
 
     $(function(){
 
@@ -99,7 +122,33 @@
             $("input[name=endDate]").attr('min', startDate); // 선택한 날짜 이전 날짜는 선택붙가 , 검증 한번 필요
             ajaxRequset(type,url,data,ajaxGetSoldout);
         });
+
+
+        /* 선택시간(09:10) 인접값 Date 뽑아서 endDate에 max값 설정해주고,
+        * - 그 인접값의 Start 시간 이후의 것들을 모두 Disabled
+        * - end date 선택시에 앞에서 선택한 시간부터 예약할수 있는거 제외하고 싹 disabled 처리하기
+        * - 원하는 예약일(01.08)과 원하는 종료일(01.12) 사이에 예약(01.10)(01.11)이 껴있다면? 사이에 예약일중에 원하는 예약일(01.08)과 가장 가까운 예약일(01.10)의 스타트 시간값 이후를 싹 disabled
+        */
+        $("#startTime").change(function(){  
+            var type = "post";
+            var url = "/scheduler/closestTime";
+            var roomName = $("#location option:selected").val();
+            var startDate = $("input[name=startDate]").val();
+            var startTime = $("#startTime").val();
+            var data = { "startDate" : startDate,
+                "startTime" : startTime,
+                "roomName" : roomName,
+            }
+            ajaxRequset(type,url,data,ajaxGetClosestTime);
+        });
         
+        
+        /* 로딩될때, 자원을 바꿨을때 데이터를 불러오기 */
+        $("#location").change(function(){
+            $("input[name=startDate]").change();
+        }).change();
+                
+
          /* 게시판 인서트 */
         $("#insert").click(function(){
             var title = $("input[name=title]").val();

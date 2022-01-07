@@ -17,6 +17,8 @@ router.delete('/', scheduleController.scheduleDelete);
 router.get('/insertpage', scheduleController.scheduleInsertPage);
 /* 예약시 시간이 겹치지않도록 데이터를 조회하는 Ajax */
 router.post('/findDate', scheduleController.findDate);
+/* 시간 클릭시 그 시간과 가장 가까운 데이터를 조회하는 Ajax */
+router.post('/closestTime', scheduleController.findClosestTime);
 
 
 

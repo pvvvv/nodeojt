@@ -18,22 +18,27 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
       type : DataTypes.INTEGER(8),
+      comment: "캘린더 아이디"
     },
     title: {
       allowNull : false,
       type : DataTypes.STRING(50),
+      comment: "회의 내용"
     },
     category:{
       allowNull : false,
       type : DataTypes.STRING(10),
+      comment: "시간, 하루종일 구분"
     },
     startDate: {
       allowNull : false,
       type : DataTypes.DATE,
+      comment: "일정시작 날짜"
     },
     endDate: {
       allowNull : false,
       type : DataTypes.DATE,
+      comment: "일정종료 날짜"
     },
     location: {
       allowNull : false,
@@ -43,12 +48,14 @@ module.exports = (sequelize, DataTypes) => {
           args: [["301호","302호","303호","402호"]],
             msg: "비정상적인 location value 접근"
         }
-      }
+      },
+      comment: "회의실 이름"
     },
     name: {
       allowNull : false,
       type : DataTypes.STRING(20),
-    }
+      comment: "회원이름"
+    },
   }, {
     sequelize,
     modelName: 'scheduler',
