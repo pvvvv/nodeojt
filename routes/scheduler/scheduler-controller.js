@@ -40,7 +40,6 @@ exports.findDate = async function(req, res, next){
     var {startDate, roomName} = req.body;
     var minTime = startDate+"T00:00:00";
     var maxTime = startDate+"T23:59:59";
-    var statusNum = 200;
 
     try {
         var findData = await db.scheduler.findAll({
@@ -53,10 +52,9 @@ exports.findDate = async function(req, res, next){
                         }
                     },
                     {
-                        startDate :{
-                            [OP.lte] : minTime // <=
-                        },
+
                         endDate : {
+                            [OP.lte] : minTime, // <=
                             [OP.gte] : maxTime // <=
                         }
                     }
@@ -131,6 +129,33 @@ exports.findClosestTime = async function(req, res, next){
 
     res.json(findData);
 }
+
+exports.findEndDate = async function(req, res, next){
+    var OP = sequelize.Op;
+    var {endDate, roomName} = req.body;
+    var minTime = endDate+"T00:00:00";
+    var maxTime = endDate+"T23:59:59";
+
+    try{
+        var findData = await db.scheduler.findOne({
+            where : {
+                startDate : {
+                    [OP.gte] : minTime,// >=
+                    [OP.lte] : maxTime // <= 
+                },
+                location : {
+                    [OP.like] : '%' + roomName + '%'
+                }
+            },
+            order: [['endDate', 'ASC']]
+        });
+
+        return res.status(200).json(findData);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 

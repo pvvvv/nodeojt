@@ -1,5 +1,6 @@
 #calendar{
     width: 800px;
+    height: 600px;
     margin-top: 10px;
 }
 .changePageBtn, .selectViewBtn{

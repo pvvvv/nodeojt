@@ -9,38 +9,46 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-
+//!!!!!!!!!!!!!!!!!!!!!!!26일자 예외사항 확인하고 해결하기...
     // Ajax 호출시에 응답이 올때까지 화면 멈추기 추가
 
     /* 시간 제한하기 콜백 */
     function ajaxGetSoldout(success){
         var choiceDate = moment($("input[name=startDate]").val())._i;
-        
-        /* !사용할거!
-        날짜에 알맞은 스케줄 보여주기
-        document.getElementById('ibox').innerHTML = `<iframe id="inIbox" src="/scheduler/iframe"></iframe>`
-        */
+
+        // /* 스케줄러 보여주기 */
+        // document.getElementById('ibox').innerHTML = `<iframe id="inIbox" src="/scheduler/iframe"></iframe>`
 
         //시간 초기화
         $('#startTime option').prop('disabled', false).eq(0).prop('selected', true);
         $('#endTime option').prop('disabled', false).eq(0).prop('selected', true);
         
         $(success).each(function() {
-            
             var data = $(this)[0]; // success[0] = data
-            var endDay = data['endDate'].substring(0, 10); // 그 일정에 종료날짜 포멧 YYYY-MM-DD
-            var start = new Date(data['startDate']).toTimeString().substring(0, 5); // 시작시간 포멧 08:00
-            var end = new Date(data['endDate']).toTimeString().substring(0, 5);     // 종료시간 포멧 09:00
-            var stIndex = $('#startTime option[value="' + start + '"]').index(); // 전체 옵션중에 시작시간이랑 같은 옵션의 인덱스
-            var edIndex = $('#endTime option[value="' + end + '"]').index();     // 전체 옵션중에 종료시간이랑 같은 옵션의 인덱스
-            
-            if(moment(endDay).isAfter(choiceDate)){ // 1번 어떻게 비교할지 고민하기
-                for(var i=stIndex; i<=$('#startTime option').length; i++) {
-                    $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
-                    $('#endTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+            var startDate = data['startDate'].substring(0, 10); // 가져온 일정의 종료날짜 포멧 YYYY-MM-DD
+            var endDay = data['endDate'].substring(0, 10); // 가져온 일정의 종료날짜 포멧 YYYY-MM-DD
+            var start = new Date(data['startDate']).toTimeString().substring(0, 5); // 가져온 일정의 시작시간 포멧 08:00
+            var end = new Date(data['endDate']).toTimeString().substring(0, 5);     // 가져온 일정의 종료시간 포멧 09:00
+            var stIndex = $('#startTime option[value="' + start + '"]').index(); // 내가 정의한 전체 옵션중에 시작시간이랑 같은 옵션의 인덱스
+            var edIndex = $('#endTime option[value="' + end + '"]').index();     // 내가 정의한 전체 옵션중에 종료시간이랑 같은 옵션의 인덱스
+            var repetCount = $("#endTime option").length; // for문 몇번 돌릴지
+
+            console.log(startDate == choiceDate);
+            if(startDate == choiceDate){ // 가져온 일정의 종료 날짜가 내가 고른 날짜보다 이후 이거나 같다면 26일이 25일보다 이후라면
+                for(var i=stIndex; i<=$('#startTime option').length; i++) { // 시작 인덱스부터
+                    if(stIndex < i && i < edIndex ){// 0번째는 10번보다 작으니 열려있어야해 
+                        $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                        $('#endTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
+                    }
                 };
-            }else{
-                for(var i=stIndex; i<=edIndex; i++) {
+            }
+            // else if(){
+            //     /* 인접값이랑 내가 선택한 날짜랑 다른 로직 추가하기 */
+
+
+            // }
+            else{ // 인접값의 종료 날짜가 고른 날짜랑 같지않다면
+                for(var i = 0; i <= repetCount; i++) {
                     $('#startTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
                     $('#endTime option').eq(i).prop('disabled', true); // eq는 인덱스값을 가져온다
                 };
@@ -54,37 +62,63 @@
 
     /* 인접값 end 시간이후 모두 disabled 시키는 콜백 */
     function ajaxGetClosestTime(success){
+        var choiceDate = moment($("input[name=startDate]").val())._i; // 내가 선택한 날짜
         var startTime = $("#startTime").val(); // 내가 선택한 시작시간
-        var selectIndex = $('#startTime option[value="' + startTime + '"]').index(); // 인접 데이터 시작시간의 '인덱스'
-        var repetCount = $("#endTime option").length; // 종료시간의 개수
-        $("input[name=endDate]").removeAttr('max'); // 선택할 수 있는 최대 날짜를 초기화해준다.
-        $('#endTime option').removeAttr('disabled'); // 민 시간 맥스 시간 비교해서 위 아래로 디스에이블 위에서 아래로 훑으면서 로직 짜는게 편할듯
+        var selectIndex = $('#startTime option[value="' + startTime + '"]').index(); // 내가 선택한 시간의 '인덱스'
+        var repetCount = $("#endTime option").length; // for문 몇번 돌릴지
+        $("#endDate").removeAttr('max'); // 선택할 수 있는 최대 날짜를 초기화해준다.
+        $('#endTime option').prop('disabled', false).eq(0).prop('selected', true);
         
         if(success !== null){
             var maxDate = success.startDate.substring(0, 10); // 인접값의 '날짜'
             var maxTime = new Date(success.startDate).toTimeString().substring(0, 5); // 인접데이터의 시작'시간'
-            var endTime = new Date(success.endDate).toTimeString().substring(0, 5); // 인접데이터의 시작'시간'
+            var endTime = new Date(success.endDate).toTimeString().substring(0, 5); // 인접데이터의 종료'시간'
             var stIndex = $('#startTime option[value="' + maxTime + '"]').index(); // 인접 데이터 시작시간의 '인덱스'
             var edIndex = $('#endTime option[value="' + endTime + '"]').index();   // 인접 데이터 종료시간의 '인덱스'
 
             $("input[name=endDate]").attr('max', maxDate); // 최대 선택가능 날짜 세팅
             
+            if(choiceDate !== maxDate){
+                for(var i = 0; i <= repetCount ; i++) { // 8시부터 19시까지 도는데
+                    if(i <= selectIndex && stIndex <= i){ // 내가 선택한 시간보다 작고 , 데이터의 종료시간이 큰것들을
+                        $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
+                    }
+                    $('#endTime option').not(':disabled').first().prop('selected', true);
+                };
+            }else{ // choiceDate == maxDate
+                for(var i = 0; i <= repetCount ; i++) { // 8시부터 19시까지 도는데
+                    if(i <= selectIndex || stIndex <= i){ // 내가 선택한 시간보다 작고 , 데이터의 종료시간이 큰것들을
+                        $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
+                    }
+                    $('#endTime option').not(':disabled').first().prop('selected', true);
+                }    
+            };      
+        }else{ // 인접값이 없어
             for(var i = 0; i <= repetCount ; i++) {
-                if(i < selectIndex || stIndex < i){
-                    $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
-                }
-                $('#endTime option').not(':disabled').first().prop('selected', true);
-            };
-        }else{
-            for(var i = 0; i <= repetCount ; i++) {
-                if(i < selectIndex){
+                if(selectIndex < i){
                     $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
                 };
-                $('#endTime option').not(':disabled').first().prop('selected', true);
             };
+            $('#endTime option').not(':disabled').first().prop('selected', true);
         };
     };
 
+    function ajaxGetfindEndDate(success) {
+        $('#endTime option').prop('disabled', false).eq(0).prop('selected', true);
+        var choiceDate = moment($("#endDate").val())._i; // 내가 선택한 날짜
+        var maxDate = new Date(success.startDate).toTimeString().substring(0, 10); // 인접데이터의 '날짜'
+        var maxTime = new Date(success.startDate).toTimeString().substring(0, 5); // 인접데이터의 시작'시간'
+        var repetCount = $("#endTime option").length; // 종료시간의 개수
+
+        if(choiceDate !== maxDate){
+            var stIndex = $('#startTime option[value="' + maxTime + '"]').index(); // 인접 데이터 시작시간의 '인덱스'
+            for(var i = stIndex; i <= repetCount ; i++){
+                $('#endTime option').eq(i).prop('disabled', true); // 해당값에 disabled 처리
+            }
+        }else{
+            return;
+        }
+    }
 
     /* 3번 (가정)
         * 만약 1월 8일부터 1월 10일까지 예약하고싶은데
@@ -103,11 +137,6 @@
         var dd = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
         $("input[type=date]").val(yyyy+"-"+mm+"-"+dd);
 
-        /* 자원선택 */
-        $("#location").click(function(){
-            
-        });
-
         /* 예약 시작일 선택시 예약된곳 예약불가 */
         $("input[name=startDate]").change(function(){
             var startDate = $("input[name=startDate]").val();
@@ -122,7 +151,6 @@
             $("input[name=endDate]").attr('min', startDate); // 선택한 날짜 이전 날짜는 선택붙가 , 검증 한번 필요
             ajaxRequset(type,url,data,ajaxGetSoldout);
         });
-
 
         /* 선택시간(09:10) 인접값 Date 뽑아서 endDate에 max값 설정해주고,
         * - 그 인접값의 Start 시간 이후의 것들을 모두 Disabled
@@ -140,6 +168,20 @@
                 "roomName" : roomName,
             }
             ajaxRequset(type,url,data,ajaxGetClosestTime);
+            
+        });
+
+        $("#endDate").change(function(){  
+            var type = "post";
+            var url = "/scheduler/findEndDate";
+            var roomName = $("#location option:selected").val();
+            var endDate = $("input[name=endDate]").val();
+            var endTime = $("#endTime").val();
+            var data = { "endDate" : endDate,
+                "endTime" : endTime,
+                "roomName" : roomName,
+            }
+            ajaxRequset(type,url,data,ajaxGetfindEndDate);
         });
         
         
@@ -248,7 +290,7 @@
                 <option value="19:00">19:00</option> 
             </select>
             <span style="font-size: 15px; margin-right: 10px;">부터</span>
-            <input type="date" class="dateInput" name="endDate" style="height: 37px;">
+            <input type="date" class="dateInput" name="endDate" id="endDate" style="height: 37px;">
             <select name="endTime" id="endTime">     
                 <option value="08:00">08:00</option>
                 <option value="08:10">08:10</option>

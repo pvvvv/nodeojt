@@ -6,11 +6,12 @@
 </head>
 <body>
     <!-- 화면 구성 -->
-    <button class="changePageBtn" onclick="cal.prev();">이전</button>
-    <button class="changePageBtn" onclick="cal.today();">오늘</button>
-    <button class="changePageBtn" onclick="cal.next();">다음</button>
+    <button class="changePageBtn" onclick="cal.prev(rangeBind());">이전</button>
+    <button class="changePageBtn" onclick="cal.today(rangeBind());">오늘</button>
+    <button class="changePageBtn" onclick="cal.next(rangeBind());">다음</button>
+    <span id="renderRange" class="render-range"></span>
     <div>
-        <div id="calendar" style="height: 200px;"></div>
+        <div id="calendar" style="height: 1000px;"></div>
     </div>
     
     <!-- 스타일 및 js -->
@@ -27,7 +28,7 @@
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script>
         var cal = new tui.Calendar(document.getElementById('calendar'), {
-            defaultView: 'month',
+            defaultView: 'week',
             taskView: true,    
             usageStatistics: false,
             useCreationPopup : false,
@@ -83,7 +84,6 @@
                 console.log('clickDayname', date);
             },
             'beforeCreateSchedule': function(e) {
-                console.log("hi");
                 console.log(e);
             },
             'beforeUpdateSchedule': function(e) {
@@ -110,5 +110,17 @@
             },
         });
 
+        function rangeBind(){
+            var startDate = new Date(cal.getDateRangeStart()).toLocaleDateString();
+            var endDate = new Date(cal.getDateRangeEnd()).toLocaleDateString();
+            document.getElementById('renderRange').innerHTML="<span>"+startDate +"~"+  endDate+"</span>";
+        }
+
+        $(window).on('load', function(){
+            rangeBind();
+        });
+        $(".changePageBtn").click(function(){
+            rangeBind();
+        });
     </script>
 </body>
