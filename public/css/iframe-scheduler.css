@@ -1,6 +1,5 @@
 #calendar{
-    width: 800px;
-    height: 600px;
+    width: 600px;
     margin-top: 10px;
 }
 .changePageBtn, .selectViewBtn{
@@ -15,4 +14,7 @@
 }
 .selectViewBtn{
     background-color: rgb(255, 188, 255);
+}
+#inIbox{
+    height: 600px;
 }

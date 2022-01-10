@@ -5,6 +5,11 @@ exports.iframeSchedulerPage = async function(req, res, next){
     var schedulerData = await db.scheduler.findAll({});
     data = schedulerData;
 
+    for(i=0; i < data.length ; i++){
+        var titleMix = "["+data[i].location+"]"+"["+data[i].name+"]"+"["+data[i].title+"]";
+        data[i].title = titleMix;
+    }
+
     try{  
         res.render('iframe-scheduler.html', data);
     } catch (error) {
@@ -40,7 +45,7 @@ exports.findDate = async function(req, res, next){
     var {startDate, roomName} = req.body;
     var minTime = startDate+"T00:00:00";
     var maxTime = startDate+"T23:59:59";
-
+    console.log("1번");
     try {
         var findData = await db.scheduler.findAll({
             where : {
@@ -79,13 +84,14 @@ exports.findDate = async function(req, res, next){
     };
 };
 
+/* 스케줄 인서트 */
 exports.scheduleInsert = async function(req, res, next){
     var {name, location, title, startDate, startTime, endDate, endTime, allday} = req.body;
     var id = req.session.user.ID;
     var category;
     var start = startDate+"T"+startTime;
     var end = endDate+"T"+endTime;
-    
+    console.log("2번");
     try {
         if(allday === "true"){
             category = "allday";
@@ -121,7 +127,7 @@ exports.findClosestTime = async function(req, res, next){
     var endDateMin = startDate+"T00:00:00";
     var endDateMax = startDate+"T23:59:59";
     var start = startDate+"T"+startTime;
-
+    console.log("3번");
 
     try {
         var findData = await db.scheduler.findOne({

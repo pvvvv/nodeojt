@@ -25,9 +25,9 @@ select{
 #inIbox{
     position: absolute;
     left : 1100px;
-    top: 3px;
-    width: 840px;
-    height: 1100px;
+    top: 20px;
+    width: 610px;
+    height: 860px;
 }
 option:disabled{
     color: red;
