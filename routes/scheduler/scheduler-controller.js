@@ -52,12 +52,19 @@ exports.findDate = async function(req, res, next){
                         }
                     },
                     {
-
+                        startDate :{
+                            [OP.lte] : minTime // <=
+                        },
                         endDate : {
-                            [OP.lte] : minTime, // <=
                             [OP.gte] : maxTime // <=
                         }
-                    }
+                    },
+                    {
+                        endDate : {
+                            [OP.lte] : maxTime,
+                            [OP.gte] : minTime
+                        }
+                    },
                 ],
                 location : {
                     [OP.like] : '%' + roomName + '%'
@@ -111,14 +118,34 @@ exports.scheduleInsert = async function(req, res, next){
 exports.findClosestTime = async function(req, res, next){
     var OP = sequelize.Op;
     var {startDate, startTime, roomName} = req.body;
+    var endDateMin = startDate+"T00:00:00";
+    var endDateMax = startDate+"T23:59:59";
     var start = startDate+"T"+startTime;
+
 
     try {
         var findData = await db.scheduler.findOne({
             where : {
-                startDate : {
-                    [OP.gte] : start,
-                },
+                [OP.or] : [
+                    {
+                        startDate : {
+                            [OP.gte] : start,// >=
+                        },
+                    },
+                    {
+                        endDate : {
+                            [OP.gte] : endDateMin,
+                            [OP.lte] : endDateMax
+                        }
+                    },
+                    db.sequelize.where(db.sequelize.literal('\''+endDateMax+'\''), {
+                        [OP.between] : [
+                            db.sequelize.col("startDate"),
+                            db.sequelize.col("endDate"),
+                        ],
+                    }),
+                    
+                ],
                 location : roomName
             },
             order : [['startDate', 'asc']],
@@ -139,10 +166,19 @@ exports.findEndDate = async function(req, res, next){
     try{
         var findData = await db.scheduler.findOne({
             where : {
-                startDate : {
-                    [OP.gte] : minTime,// >=
-                    [OP.lte] : maxTime // <= 
+                [OP.or]:[
+                {
+                    startDate : {
+                        [OP.gte] : minTime,// >=
+                        [OP.lte] : maxTime // <= 
+                    }
                 },
+                {
+                    endDate : {
+                        [OP.gte] : minTime,
+                    }
+                },
+            ],
                 location : {
                     [OP.like] : '%' + roomName + '%'
                 }
@@ -155,9 +191,6 @@ exports.findEndDate = async function(req, res, next){
         next(error);
     }
 }
-
-
-
 
  
 exports.scheduleModify = async function(req, res, next){}
