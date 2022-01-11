@@ -1,5 +1,6 @@
 var db = require("../../models");
 var sequelize = require('sequelize');
+var moment = require('moment');
 
 exports.iframeSchedulerPage = async function(req, res, next){
     var schedulerData = await db.scheduler.findAll({});
@@ -122,76 +123,145 @@ exports.scheduleInsert = async function(req, res, next){
 };
 
 exports.findClosestTime = async function(req, res, next){
+    console.log("3번");
     var OP = sequelize.Op;
     var {startDate, startTime, roomName} = req.body;
     var endDateMin = startDate+"T00:00:00";
     var endDateMax = startDate+"T23:59:59";
     var start = startDate+"T"+startTime;
-    console.log("3번");
 
     try {
-        var findData = await db.scheduler.findOne({
+        /* 내가 정한 날짜에 시작하는 데이터가 있는지? */
+        var tempData = await db.scheduler.findAll({
             where : {
-                [OP.or] : [
-                    {
-                        startDate : {
-                            [OP.gte] : start,// >=
-                        },
-                    },
-                    {
-                        endDate : {
-                            [OP.gte] : endDateMin,
-                            [OP.lte] : endDateMax
-                        }
-                    },
-                    db.sequelize.where(db.sequelize.literal('\''+endDateMax+'\''), {
-                        [OP.between] : [
-                            db.sequelize.col("startDate"),
-                            db.sequelize.col("endDate"),
-                        ],
-                    }),
-                    
-                ],
+                startDate : {
+                    [OP.gte] : start,// >=
+                },
+                startDate : {
+                    [OP.gte] : endDateMin,
+                    [OP.lte] : endDateMax
+                },     
                 location : roomName
             },
             order : [['startDate', 'asc']],
         });
+
+        /* 데이터가 1개 이상이거나 */
+        if(tempData.length >= 1){
+            console.log("hh11")
+            var tempLastLength = tempData.length -1
+            var tempEndDate = (tempData[tempLastLength].endDate).substring(0, 10);
+
+            /* 가져온 데이터가 1개 이상이고 내가 선택한 시작 날짜와 가져온 데이터의 종료날짜가 같다면 */
+            if(startDate == tempEndDate){
+                console.log("여길 왔습니다2");
+                var findData = await db.scheduler.findOne({
+                    where : {
+                        startDate : {
+                            [OP.gte] : start,// >=
+                        },
+                        location : roomName
+                    },
+                    order : [['startDate', 'asc']],
+                });
+            }/* 가져온 데이터가 1개 이상이고 내가 선택한 시작 날짜와 가져온 데이터의 종료날짜가 다르다면 */
+            else if(startDate !== tempEndDate){
+                console.log("여길 왔습니다3");
+                var findData = await db.scheduler.findOne({
+                    where : {
+                        startDate : {
+                            [OP.gte] : start,// >=
+                        },
+                        location : roomName
+                    },
+                    order : [['startDate', 'asc']],
+                });
+            }
+        }
+
+        /* 만약 조회했는데 값이 없다면? */
+        if(tempData == ""){
+            console.log("여길 왔습니다1");
+            var findData = await db.scheduler.findOne({
+                where : {
+                    [OP.or] : [
+                        {
+                            startDate : {
+                                [OP.gte] : start,// >=
+                            },
+                        },
+                        {
+                            endDate : {
+                                [OP.gte] : endDateMin,
+                                [OP.lte] : endDateMax
+                            }
+                        },
+                        db.sequelize.where(db.sequelize.literal('\''+endDateMax+'\''), {
+                            [OP.between] : [
+                                db.sequelize.col("startDate"),
+                                db.sequelize.col("endDate"),
+                            ],
+                        }),
+                        
+                    ],
+                    location : roomName
+                },
+                order : [['startDate', 'asc']],
+            });
+        }
+
+        // var findData = await db.scheduler.findOne({
+        //     where : {
+        //         [OP.or] : [
+        //             {
+        //                 startDate : {
+        //                     [OP.gte] : start,// >=
+        //                 },
+        //             },
+        //             {
+        //                 endDate : {
+        //                     [OP.gte] : endDateMin,
+        //                     [OP.lte] : endDateMax
+        //                 }
+        //             },
+        //             db.sequelize.where(db.sequelize.literal('\''+endDateMax+'\''), {
+        //                 [OP.between] : [
+        //                     db.sequelize.col("startDate"),
+        //                     db.sequelize.col("endDate"),
+        //                 ],
+        //             }),
+                    
+        //         ],
+        //         location : roomName
+        //     },
+        //     order : [['startDate', 'asc']],
+        // });
+ 
+        res.json(findData);
     } catch (error) {
         next(error);
     };
 
-    res.json(findData);
 }
 
 exports.findEndDate = async function(req, res, next){
     var OP = sequelize.Op;
-    var {endDate, roomName} = req.body;
-    var minTime = endDate+"T00:00:00";
-    var maxTime = endDate+"T23:59:59";
+    var {endDate, roomName, endTime} = req.body;
+    var start = endDate+"T"+endTime;
+
+    console.log(start);
 
     try{
         var findData = await db.scheduler.findOne({
             where : {
-                [OP.or]:[
-                {
-                    startDate : {
-                        [OP.gte] : minTime,// >=
-                        [OP.lte] : maxTime // <= 
-                    }
+                startDate : {
+                    [OP.gte] : start,// >=
                 },
-                {
-                    endDate : {
-                        [OP.gte] : minTime,
-                    }
-                },
-            ],
-                location : {
-                    [OP.like] : '%' + roomName + '%'
-                }
+                location : roomName
             },
-            order: [['endDate', 'ASC']]
+            order : [['startDate', 'asc']],
         });
-
+        
         return res.status(200).json(findData);
     } catch (error) {
         next(error);
