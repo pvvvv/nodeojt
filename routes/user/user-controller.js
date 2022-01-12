@@ -90,5 +90,20 @@ exports.doJoin = async function(req, res, next){
 }
 
 exports.doLogin = async function(req, res, next){
-    res.redirect('/scheduler/');
+    try {        
+        res.redirect('/scheduler/');
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.logout = async function(req, res, next){
+    try{
+        req.session.destroy(function(){ 
+            req.session;
+        });
+        res.redirect('/');
+    } catch (error) {
+        next(error);
+    };
 }

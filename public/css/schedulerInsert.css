@@ -1,26 +1,41 @@
+h1{
+    margin: 0;
+    display: inline;
+}
 .weapper{
     width: 1800px;
     margin: 0 auto;
 }
 .content{
+    width: 1279px;
+    height: 684px;
     padding-top: 20px;
     padding-left: 20px;
+    border: 5px solid rgb(223, 223, 223);
+    border-radius: 5px;
 }
 select{
-    width: 150px;
+    width: 60px;
     height: 40px;
     font-size: 14px;
     font-weight: bold;
-}
-#dateTimeLocal{
-    width: 200px;
+    border: none;
+    margin-left: 10px;
 }
 .dateInput{
     font-size: 14px;
     font-weight: bold;
+    border: none;
+    width: 150px;
+    letter-spacing: -1px;
+    margin-left: 20px;
 }
 option:disabled{
     color: red;
+}
+.changePageBtn{
+    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(0, 0, 0);
 }
 #calendar{
     width: 450px;
@@ -28,8 +43,50 @@ option:disabled{
 #sbox{
     position: relative;
     left: 800px;
-    bottom: 322px;
+    bottom: 395px;
+    width: 450px;
+    height: 625px;
+    border: 5px solid rgb(223, 223, 223);
+    border-radius: 5px;
+    box-shadow: gray 3px 3px 7px;
 }
-.tui-full-calendar-timegrid-gridline{
-    height: 10px;
+#location{
+    cursor: pointer;
+    width: 730px;
+    height: 60px;
+    border: none;
+}
+#title{
+    width: 700px;
+    height: 40px;
+    margin: 10px;
+    border: none;
+}
+#insert{
+    cursor: pointer;
+    width: 780px;
+    height: 30px;
+    border: none;
+    box-shadow: gray 3px 3px 7px;
+}
+.styleform{
+    width: 782px;
+    height: 60px;
+    border: rgb(211, 211, 211) 1px solid;
+    border-radius: 5px;
+    margin-top: 20px;
+    line-height: 60px;
+}
+.allday{
+    display: inline;
+    width: 70px;
+}
+#infoText{
+    position: relative;
+    left: 100px;
+    color: rgb(255, 56, 56);
+}
+.alldayCheckOn{
+    pointer-events: none;
+    opacity: 0.4;
 }

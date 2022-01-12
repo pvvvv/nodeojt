@@ -7,8 +7,10 @@ router.post('/findoverlap', userController.findoverlap);
 router.post('/join', userController.doJoin);
 router.post('/login', passport.authenticate('local',{
     failureRedirect : '/',
-    }), userController.doLogin
+}), userController.doLogin
 );
+
+router.get('/logout', userController.logout);
 
 
 
