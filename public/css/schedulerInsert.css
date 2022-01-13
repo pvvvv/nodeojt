@@ -62,7 +62,7 @@ option:disabled{
     margin: 10px;
     border: none;
 }
-#insert{
+#insert, #modify{
     cursor: pointer;
     width: 780px;
     height: 30px;

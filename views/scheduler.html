@@ -5,20 +5,38 @@
     <title>Scheduler</title>
 </head>
 <body>
+    <div id= "modal"> 
+        <div id = "onPop">
+            <div id="closeBtn" style ="cursor: pointer;"> 
+                닫기
+            </div>
+            <h2>예약 상세보기</h2>
+            <div class="popContent">
+
+                
+            </div>
+            <div class="mdBtn">    
+                <button type="button" id="modifyBtn">수정</button>
+                <button type="button" id="deleteBtn">삭제</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- 화면 구성 -->
-    <button class="changePageBtn" onclick="cal.prev();">이전</button>
-    <button class="changePageBtn" onclick="cal.today();">오늘</button>
-    <button class="changePageBtn" onclick="cal.next();">다음</button>
-    <button class="selectViewBtn" onclick="cal.changeView('day', true);">일별</button>
-    <button class="selectViewBtn" onclick="cal.changeView('week', true);">주별</button>
-    <button class="selectViewBtn" onclick="cal.changeView('month', true);">월별</button>
+    <button type="button" class="changePageBtn" onclick="cal.prev();">이전</button>
+    <button type="button" class="changePageBtn" onclick="cal.today();">오늘</button>
+    <button type="button" class="changePageBtn" onclick="cal.next();">다음</button>
+    <button type="button" class="selectViewBtn" onclick="cal.changeView('day', true);">일별</button>
+    <button type="button" class="selectViewBtn" onclick="cal.changeView('week', true);">주별</button>
+    <button type="button" class="selectViewBtn" onclick="cal.changeView('month', true);">월별</button>
     <span id="renderRange" class="render-range"></span>
     <span style="position: relative; left: 430px; top: 3px;"><%= user.name %>님 안녕하세요</span>
     <button style="position: relative; left: 440px;"><a href="/scheduler/insertpage">예약하기</a></button>
     <button style="position: relative; left: 440px;"><a href="/user/logout">로그아웃</a></button>
     <div>
         <div id="calendar" style="height: 800px;"></div>
-    </div>
+    </div>    
     
     <!-- 스타일 및 js -->
     <link rel='stylesheet' type='text/css' media='screen' href='/css/scheduler.css'>
@@ -36,15 +54,20 @@
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
     <script>
+        var schedulerItem = null;
+
+
         function ajaxGetfindEndDate(success){
-            alert("hi");
+            alert(success.text);
+            document.location.reload();
         }
         var cal = new tui.Calendar(document.getElementById('calendar'), {
             defaultView: 'month',
             taskView: true,    
             usageStatistics: false,
             useCreationPopup : false,
-            useDetailPopup: true,
+            useDetailPopup: false,
+            isReadOnly : true,
             week: {
                 daynames: ['일', '월', '화', '수', '목', '금', '토'],
                 narrowWeekend: false,
@@ -88,40 +111,60 @@
             <% } %>
         ]);
         
+        /* 모달레이어팝업 */
+        $(document).ready(function() {
+            $("#closeBtn").click(function(){
+                $(".popContent *").remove();
+
+
+                $("#onPop").fadeOut();
+                $("#modal").fadeOut();
+            });
+        });
+
+        $("#deleteBtn").click(function(){
+            if(schedulerItem == null){
+                return;
+            }else{
+                var id = schedulerItem.schedule.id;
+                var calendarId = schedulerItem.schedule.calendarId;
+                var type = "delete";
+                var url = "/scheduler/";
+                var data = {
+                    "id" : id,
+                    "calendarId" : calendarId
+                };
+                
+                ajaxRequset(type,url,data,ajaxGetfindEndDate);
+            }
+        });
+
+        $("#modifyBtn").click(function(){
+            if(schedulerItem == null){
+                return;
+            }else{
+                var calendarId = schedulerItem.schedule.calendarId; // 캘린더 아이디  
+                document.location.href = "/scheduler/modify?scheduleNum="+calendarId+"";
+            }
+        });
+
         // event handlers
         cal.on({
             'clickMore': function(e) {
                 console.log('clickMore', e);
             },
             'clickSchedule': function(e) {
-                console.log('clickSchedule', e);
+                schedulerItem = e;
+                var startDate = moment(e.schedule.start._date).format('YY'+'년'+'MM'+'월'+'DD'+'일'+' '+'HH'+'시'+'mm'+'분');
+                var endDate = moment(e.schedule.end._date).format('YY'+'년'+'MM'+'월'+'DD'+'일'+' '+'HH'+'시'+'mm'+'분');
+
+                $(".popContent").append("<p>예약명 : "+e.schedule.title+"</p>");
+                $(".popContent").append("<p>일정 : "+startDate+" ~ "+endDate+"까지</p>");
+                $("#onPop").fadeIn();
+                $("#modal").fadeIn();
             },
             'clickDayname': function(date) {
                 console.log('clickDayname', date);
-            },
-            'beforeUpdateSchedule': function(e) {
-                var schedule = e.schedule;
-                var changes = e.changes;
-                // 업데이트 페이지로 이동
-                console.log('beforeUpdateSchedule', e);
-                
-                // if (changes && !changes.isAllDay && schedule.category === 'allday') {
-                //     changes.category = 'time';
-                // }
-
-                cal.updateSchedule(schedule.id, schedule.calendarId, changes);
-            },
-            'beforeDeleteSchedule': function(e) {
-                var id = e.schedule.id;
-                var calendarId = e.schedule.calendarId;
-                var type = "delete";
-                var url = "/scheduler/";
-                var data = {
-                    "id" : id,
-                    "calendarId" : calendarId
-                }
-
-                ajaxRequset(type,url,data,ajaxGetfindEndDate);
             },
             'afterRenderSchedule': function(e) {
                 var schedule = e.schedule;
@@ -130,11 +173,6 @@
             },
         });
         
-        // function renderRangeBind(){
-        //     var startDate = new Date(cal.getDateRangeStart()).toLocaleDateString();
-        //     var endDate = new Date(cal.getDateRangeEnd()).toLocaleDateString();
-        //     document.getElementById('renderRange').innerHTML="<span>"+startDate +"~"+  endDate+"</span>";
-        // }
         function rangeBind(){
             var startDate = new Date(cal.getDateRangeStart()).toLocaleDateString();
             var endDate = new Date(cal.getDateRangeEnd()).toLocaleDateString();
