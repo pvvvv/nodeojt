@@ -30,8 +30,6 @@ exports.findoverlap = async function(req, res, next){
             where: {id: id}
         });
 
-       
-
         if(findData === null){
             success.text = "사용이 가능한 사번입니다.";
             success.overlapCheck = 1;
@@ -41,7 +39,6 @@ exports.findoverlap = async function(req, res, next){
             success.overlapCheck = 0;
             statusNum = 409
         };
-        console.log(success);
         res.status(statusNum).json(success);
     } catch (error) {
         next(error);
@@ -93,5 +90,20 @@ exports.doJoin = async function(req, res, next){
 }
 
 exports.doLogin = async function(req, res, next){
-    res.redirect('/scheduler/');
+    try {        
+        res.redirect('/scheduler/');
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.logout = async function(req, res, next){
+    try{
+        req.session.destroy(function(){ 
+            req.session;
+        });
+        res.redirect('/');
+    } catch (error) {
+        next(error);
+    };
 }

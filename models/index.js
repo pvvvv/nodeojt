@@ -5,8 +5,21 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/sequelize.json')[env];
 const db = {};
+const moment = require('moment');
+
 
 let sequelize;
+config.timezone = '+09:00';
+config.dialectOptions = {
+  typeCast: function (field, next) { // for reading from database
+    if (field.type === 'DATETIME') {              
+        return moment(field.string()).format('YYYY-MM-DD HH:mm:ss');
+    }else if(field.type === 'DATE'){              
+        return moment(field.string()).format('YYYY-MM-DD');
+    }
+    return next(); 
+  }        
+};
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
@@ -29,6 +42,7 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+db.Op = Sequelize.Op;
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

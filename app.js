@@ -49,7 +49,9 @@ app.use(function(req, res, next) {
       next();
     }
   }else{
-    if(whiteList || !nowUrl.startsWith('/scheduler')){
+    if(nowUrl.startsWith('/user/logout')){
+      return next();
+    }else if(whiteList || !nowUrl.startsWith('/scheduler')){
       return res.redirect('/scheduler');
     }
     //사용하는 url 추가해서 그거 이외엔 다 리다이렉트

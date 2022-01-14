@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      models.user.hasMany(models.scheduler, {foreignKey: "ID"});
+      models.user.hasMany(models.scheduler, {foreignKey: "id"});
       // define association here
     }
   };
@@ -18,14 +18,17 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
+      comment: "유저아이디"
     },
     name: {
       allowNull : false,
       type: DataTypes.STRING(30),
+      comment: "유저이름"
     },
     password: {
       allowNull : false,
       type : DataTypes.STRING,
+      comment: "비밀번호"
     },
   }, {
     sequelize,
