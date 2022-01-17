@@ -24,9 +24,9 @@ exports.schedulerPage = async function(req, res, next){
 
     try{
         if(data == null || data == undefined){
-            res.status(206).render('scheduler.html');
+            res.status(206);
         }else{
-            res.status(200).render('scheduler.html', data);
+            res.status(200).json(data);
         }
     } catch (error) {
         next(error);
@@ -45,10 +45,9 @@ exports.findDate = async function(req, res, next){
     var minTime = startDate+"T00:00:00";
     var maxTime = startDate+"T23:59:59";
     var modNum = calendarId;
-    console.log("1번")
+
     try {
         if(path !== undefined && path == "modify"){
-            console.log("서버 여기맞나")
             var findData = await db.scheduler.findAll({
                 where : {
                     [OP.or]:[

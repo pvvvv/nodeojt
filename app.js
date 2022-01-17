@@ -39,27 +39,27 @@ passportConfig();
 app.use(passport.initialize());
 //app.use(passport.session()); //세션방식 구현시 필요
 
-app.use(function(req, res, next) {
-  var nowUrl = req.url;
-  var blackList = nowUrl.startsWith('/scheduler');
-  var whiteList = nowUrl.startsWith('/join') || nowUrl == '/';
-  if(req.session.user == undefined){
-    if(blackList){
-      return res.redirect('/');
-    }else{
-      next();
-    }
-  }else{
-    if(nowUrl.startsWith('/user/logout')){
-      return next();
-    }else if(whiteList || !nowUrl.startsWith('/scheduler')){
-      return res.redirect('/scheduler');
-    }
-    //사용하는 url 추가해서 그거 이외엔 다 리다이렉트
-    next();
-  }
+// app.use(function(req, res, next) {
+//   var nowUrl = req.url;
+//   var blackList = nowUrl.startsWith('/scheduler');
+//   var whiteList = nowUrl.startsWith('/join') || nowUrl == '/';
+//   if(req.session.user == undefined){
+//     if(blackList){
+//       return res.redirect('/');
+//     }else{
+//       next();
+//     }
+//   }else{
+//     if(nowUrl.startsWith('/user/logout')){
+//       return next();
+//     }else if(whiteList || !nowUrl.startsWith('/scheduler')){
+//       return res.redirect('/scheduler');
+//     }
+//     //사용하는 url 추가해서 그거 이외엔 다 리다이렉트
+//     next();
+//   }
 
-});
+// });
 
 app.use('/', indexRouter);
 app.use('/scheduler', schedulerRouter);

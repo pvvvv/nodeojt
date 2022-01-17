@@ -87,7 +87,7 @@ exports.doJoin = async function(req, res, next){
                 success.text = "가입되셨습니다!"
                 statusNum = 200;
             } catch (error) {
-                statusNum = 400;
+                statusNum = 401;
                 success.errorMessage = "가입에 실패했습니다. 고객센터로 전화주세요";
             }
         };
@@ -99,8 +99,7 @@ exports.doJoin = async function(req, res, next){
 
 exports.doLogin = async function(req, res, next){
     var {id,password} = req.body;
-
-    console.log("!!!!!!!!!!!!!!!!!!!&&&&&&&&&&&&&&&&&&&")
+    var statusNum;
 
     try {
         var findData = await db.user.findOne({
@@ -110,28 +109,29 @@ exports.doLogin = async function(req, res, next){
         });
 
         if(findData === null){
+            statusNum = 406;
         }else if(!bcrypt.compareSync(password, findData.password)){
-            
+            statusNum = 401;
         }else{
             var token = jwt.sign(
                 {id: findData.id},
                 jwtKey.jwtKey.SECRET
             );
             res.json({token});
-
-            //res.status(200).redirect('/scheduler/');
         }
+        res.status(statusNum).json();
     } catch (error) {
         next(error);
     }; 
 }
 
 exports.logout = async function(req, res, next){
+
     try{
         req.session.destroy(function(){ 
             req.session;
         });
-        res.redirect('/');
+        res.status(200).json();
     } catch (error) {
         next(error);
     };
