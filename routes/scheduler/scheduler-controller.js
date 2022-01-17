@@ -22,8 +22,12 @@ exports.schedulerPage = async function(req, res, next){
         data[i].title = titleMix;
     }
 
-    try{  
-        res.render('scheduler.html', data);
+    try{
+        if(data == null || data == undefined){
+            res.status(206).render('scheduler.html');
+        }else{
+            res.status(200).render('scheduler.html', data);
+        }
     } catch (error) {
         next(error);
     };
@@ -390,7 +394,7 @@ exports.scheduleInsert = async function(req, res, next){
                 statusNum = 205;
             }else{
                 success.text = "예약이 불가능한 시간입니다. 달력을 확인해주세요";
-                statusNum = 205;
+                statusNum = 206;
             }
         }else if(findMiddleSchedule !== undefined && findMiddleSchedule.length > 0){
             success.text = "종일 예약이 불가능한 시간입니다. 달력을 확인해주세요";
@@ -411,7 +415,7 @@ exports.scheduleInsert = async function(req, res, next){
                     statusNum = 201;
                 }else{
                     success.text = "새로고침 후 다시 진행해주세요.";
-                    statusNum = 205;
+                    statusNum = 400;
                 }
             } catch (error) {
                 next(error);

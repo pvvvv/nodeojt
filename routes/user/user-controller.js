@@ -1,5 +1,7 @@
 var db = require("../../models");
 var bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
+const jwtKey = require('../../config/jwt-index');
 
 /* 로그인(메인) 페이지 */
 exports.loginPage = async function(req, res, next){
@@ -25,24 +27,30 @@ exports.findoverlap = async function(req, res, next){
     var success = {};
     var id = req.body.id;
     
-    try{ 
-        var findData = await db.user.findOne({
-            where: {id: id}
-        });
-
-        if(findData === null){
-            success.text = "사용이 가능한 사번입니다.";
-            success.overlapCheck = 1;
-            statusNum = 200;
-        }else{
-            success.errorMessage = "사용중인 아이디입니다.";
-            success.overlapCheck = 0;
-            statusNum = 409
+    if(id.length > 4){
+        success.text = "사번을 확인해주세요";
+        success.overlapCheck = 0;
+        res.status(400).json(success);
+    }else{
+        try{
+            var findData = await db.user.findOne({
+                where: {id: id}
+            });
+            
+            if(findData === null){
+                success.text = "사용이 가능한 사번입니다.";
+                success.overlapCheck = 1;
+                statusNum = 200;
+            }else{
+                success.errorMessage = "사용중인 아이디입니다.";
+                success.overlapCheck = 0;
+                statusNum = 409
+            };
+            res.status(statusNum).json(success);
+        } catch (error) {
+            next(error);
         };
-        res.status(statusNum).json(success);
-    } catch (error) {
-        next(error);
-    };
+    }
 }
 
 /* 회원가입 */
@@ -90,11 +98,32 @@ exports.doJoin = async function(req, res, next){
 }
 
 exports.doLogin = async function(req, res, next){
-    try {        
-        res.redirect('/scheduler/');
+    var {id,password} = req.body;
+
+    console.log("!!!!!!!!!!!!!!!!!!!&&&&&&&&&&&&&&&&&&&")
+
+    try {
+        var findData = await db.user.findOne({
+            where : {
+                ID : id
+            }
+        });
+
+        if(findData === null){
+        }else if(!bcrypt.compareSync(password, findData.password)){
+            
+        }else{
+            var token = jwt.sign(
+                {id: findData.id},
+                jwtKey.jwtKey.SECRET
+            );
+            res.json({token});
+
+            //res.status(200).redirect('/scheduler/');
+        }
     } catch (error) {
         next(error);
-    }
+    }; 
 }
 
 exports.logout = async function(req, res, next){

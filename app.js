@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var session = require("express-session");
 var passport = require("passport");
 
+var { swaggerUi, specs } = require('./config/swagger');
 var indexRouter = require('./routes/index');
 var schedulerRouter = require('./routes/scheduler/index');
 var userRouter = require('./routes/user/index');
@@ -34,9 +35,9 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
 passportConfig();
+app.use(passport.initialize());
+//app.use(passport.session()); //세션방식 구현시 필요
 
 app.use(function(req, res, next) {
   var nowUrl = req.url;
@@ -63,6 +64,8 @@ app.use(function(req, res, next) {
 app.use('/', indexRouter);
 app.use('/scheduler', schedulerRouter);
 app.use('/user', userRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -8,12 +8,10 @@ router.post('/findoverlap', userController.findoverlap);
 /* 회원가입 */
 router.post('/join', userController.doJoin);
 /* 로그인 + Passport */
-router.post('/login', passport.authenticate('local',{
-    failureRedirect : '/',
-}), userController.doLogin
-);
+router.post('/login', userController.doLogin);
+// router.post('/login', userController.doLogin);
 /* 로그아웃 */
-router.get('/logout', userController.logout);
+router.get('/logout', passport.authenticate('jwt',{session : false}), userController.logout);
 
 
 
